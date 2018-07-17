@@ -1,0 +1,26 @@
+{
+  "name": "genealogy-indexer",
+  "version": "1.0.0",
+  "description": "Application helping in indexing genealogical documents.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "react_start": "react-scripts start",
+    "react_build": "react-scripts build",
+    "react_test": "react-scripts test --env=jsdom",
+    "react_eject": "react-scripts eject"
+  },
+  "repository": "https://github.com/kopringo/GenealogyIndexer",
+  "keywords": [
+    "genealogy",
+    "indexer"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "dependencies": {
+    "electron": "^2.0.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.0",
+    "react-scripts": "1.1.1"
+  }
+}
