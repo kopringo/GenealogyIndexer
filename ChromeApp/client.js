@@ -5,7 +5,10 @@ $(function(){
 
 	var f = {};
 
+	var gf;
+
 	function exportToFileEntry(fileEntry) {
+		gf = fileEntry;
 							console.log(fileEntry);
 							console.log('-------');
 		var directoryReader = fileEntry.createReader();
@@ -27,15 +30,15 @@ $(function(){
 		f.file(function(file){
 			var reader = new FileReader();
 			reader.onloadend = function(e) {
-				console.log(e);
+				console.log(e.target.result);
+
+				
+				var img = document.createElement('img');
+				img.src = e.target.result;
+				$preview.html($(img));
 			};
-			reader.readAsText(file);
+			reader.readAsDataURL(file);
 		});
-		
-		//console.log(f);
-		//f.createReader(function(fileReader){
-		//	console.log('mam reader!');
-		//});
 	});
 
 	fileEntry.getFile('dupadupa.txt', {create: true}, function(f){
@@ -64,18 +67,33 @@ $(function(){
         }, exportToFileEntry);
 		
 	$(document).on('click', '.photo', function(){
-
-		console.log(f);
-		console.log(f[$(this).data('path')].file);
-
 		
 		var reader = new FileReader();
 		reader.onloadend = function (e) {
 				console.log('loaded');
 				successCallback(e.target.result);
 		};
-		reader.readAsText( f[$(this).data('path')].file );
 		
+		console.log(f[$(this).data('path')]);
+		gf.getFile(f[$(this).data('path')].name, {}, function(f){
+			f.file(function(file){
+				var reader = new FileReader();
+				reader.onloadend = function(e) {
+					console.log(e.target.result);
+	
+					
+					var img = document.createElement('img');
+					img.src = e.target.result;
+					$preview.html($(img));
+				};
+				reader.readAsDataURL(file);
+			});
+			
+			//console.log(f);
+			//f.createReader(function(fileReader){
+			//	console.log('mam reader!');
+			//});
+		});
 
 		/*
 		var fullPath = 'file://' + $(this).data('path');
