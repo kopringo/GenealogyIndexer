@@ -9,5 +9,5 @@
     }
   },
   "icons": { "16": "calculator-16.png", "128": "calculator-128.png" },
-  "permissions": [{"fileSystem": ["write", "retainEntries", "directory"]}, "tabs", "webNavigation", "storage", "<all_urls>"]
+  "permissions": [{"fileSystem": ["write", "retainEntries", "directory"]}, "audioCapture"]
 }

@@ -32,3 +32,10 @@
 
     overflow-x: scroll;
 }
+
+.photo{
+    display: inline;
+    height: 100px;
+    border: 1px solid black;
+    margin-right: 10px;
+}

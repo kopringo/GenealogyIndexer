@@ -21,7 +21,7 @@ $(function(){
 			chrome.fileSystem.getDisplayPath(entries[i], function(displayPath){
 				//$files.append($('<span class="photo" data-path="' + displayPath + '">' + entries[i].name + '</span><br/>'));
 			});
-			$files.append($('<span class="photo" data-path="' + entries[i].name + '">' + entries[i].name + '</span><br/>'));
+			$files.append($('<span class="photo" data-path="' + entries[i].name + '">' + entries[i].name + '</span>'));
 		}
 	});
 
@@ -114,5 +114,47 @@ $(function(){
 
 
 	});
+
+	var final_transcript = '';
+	if (!('webkitSpeechRecognition' in window)) {
+		console.log('brak supportu');
+	} else {
+		var recognition = new webkitSpeechRecognition();
+  	recognition.continuous = true;
+		recognition.interimResults = true;
+		recognition.onresult = function(event) {
+			var interim_transcript = '';
+			for (var i = event.resultIndex; i < event.results.length; ++i) {
+				if (event.results[i].isFinal) {
+					final_transcript += event.results[i][0].transcript;
+				} else {
+					interim_transcript += event.results[i][0].transcript;
+				}
+			}
+			console.log(interim_transcript);
+			console.log(final_transcript);
+			/*
+			final_transcript = capitalize(final_transcript);
+			final_span.innerHTML = linebreak(final_transcript);
+			interim_span.innerHTML = linebreak(interim_transcript);
+			if (final_transcript || interim_transcript) {
+				showButtons('inline-block');
+			}
+			*/
+		};
+		recognition.onstart = function() {
+			console.log('onstarted');
+		}
+		recognition.onerror = function(event) {
+			console.log(event.error);
+		}
+		recognition.onend = function() {
+			console.log('onend');
+		}
+	}
+
+	recognition.lang = 'pl';
+	recognition.start();
+	console.log('started');
 
 });
