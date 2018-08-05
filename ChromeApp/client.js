@@ -3,6 +3,13 @@ $(function(){
 	var $files = $('#filesPanel');
 	var $preview = $('#previewPanel');
 
+	var $dataPanel_speech = $('#dataPanel_speech');
+	var $dataPanel_speech_tmp = $('#dataPanel_speech_tmp');
+
+	var previewRatio = 100;
+	var previewMarginTop = 0;
+	var previewMarginLeft = 0;
+
 	var f = {};
 
 	var gf;
@@ -25,7 +32,7 @@ $(function(){
 		}
 	});
 
-	console.log('!');
+	
 	fileEntry.getFile('400.jpg', {}, function(f){
 		f.file(function(file){
 			var reader = new FileReader();
@@ -65,7 +72,26 @@ $(function(){
       
       acceptsAllTypes: true
         }, exportToFileEntry);
-		
+	
+	$(window).on('scroll', '#previewPanel > img', function(event){
+		console.log(event);
+	});
+	$(window).on('wheel', function(event){ 
+		if(event.target.class == 'preview'){
+			console.log(event); 
+			if(event.originalEvent.deltaY < 0){
+				previewRatio -= 5;
+			} else {
+				previewRatio += 5;
+			}
+			if(previewRatio < 10) previewRatio = 10;
+			if(previewRatio > 100) previewRatio = 100;
+			//
+
+			$('#previewPanel > img').css('height', previewRatio+'%');
+		}
+	});
+
 	$(document).on('click', '.photo', function(){
 		
 		var reader = new FileReader();
@@ -83,6 +109,7 @@ $(function(){
 	
 					
 					var img = document.createElement('img');
+					img.class = 'preview';
 					img.src = e.target.result;
 					$preview.html($(img));
 				};
@@ -120,19 +147,27 @@ $(function(){
 		console.log('brak supportu');
 	} else {
 		var recognition = new webkitSpeechRecognition();
-  	recognition.continuous = true;
+  		recognition.continuous = false;
 		recognition.interimResults = true;
 		recognition.onresult = function(event) {
 			var interim_transcript = '';
 			for (var i = event.resultIndex; i < event.results.length; ++i) {
 				if (event.results[i].isFinal) {
-					final_transcript += event.results[i][0].transcript;
+					var text = event.results[i][0].transcript;
+					final_transcript += text + "\n";
+
+					if(text == "czyść" || text == "wyczyść" || text == "od nowa" || text == "restart"){
+						final_transcript = "";
+					}
+
+					$dataPanel_speech.html(final_transcript);
 				} else {
 					interim_transcript += event.results[i][0].transcript;
+					$dataPanel_speech_tmp.html(interim_transcript);
 				}
 			}
-			console.log(interim_transcript);
-			console.log(final_transcript);
+			//console.log(interim_transcript);
+			//console.log(final_transcript);
 			/*
 			final_transcript = capitalize(final_transcript);
 			final_span.innerHTML = linebreak(final_transcript);
@@ -150,6 +185,7 @@ $(function(){
 		}
 		recognition.onend = function() {
 			console.log('onend');
+			recognition.start();
 		}
 	}
 
