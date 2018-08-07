@@ -6,6 +6,9 @@ $(function(){
 	var $dataPanel_speech = $('#dataPanel_speech');
 	var $dataPanel_speech_tmp = $('#dataPanel_speech_tmp');
 
+	var previewOriginalWidth = 0;
+	var previewOriginalHeight = 0;
+
 	var previewRatio = 100;
 	var previewMarginTop = 0;
 	var previewMarginLeft = 0;
@@ -20,58 +23,64 @@ $(function(){
 							console.log('-------');
 		var directoryReader = fileEntry.createReader();
 		console.log(directoryReader);
-	directoryReader.readEntries(function(entries) {
-		console.log(entries);
-		for(var i in entries){
-			
-			f[entries[i].name] = entries[i];
-			chrome.fileSystem.getDisplayPath(entries[i], function(displayPath){
-				//$files.append($('<span class="photo" data-path="' + displayPath + '">' + entries[i].name + '</span><br/>'));
-			});
-			$files.append($('<span class="photo" data-path="' + entries[i].name + '">' + entries[i].name + '</span>'));
-		}
-	});
+		directoryReader.readEntries(function(entries) {
+			//console.log(entries);
+			for(var i in entries){
+				
+				f[entries[i].name] = entries[i];
+				chrome.fileSystem.getDisplayPath(entries[i], function(displayPath){
+					//$files.append($('<span class="photo" data-path="' + displayPath + '">' + entries[i].name + '</span><br/>'));
+				});
+				$files.append($('<span class="photo" data-path="' + entries[i].name + '">' + entries[i].name + '</span>'));
+			}
+		});
 
 	
-	fileEntry.getFile('400.jpg', {}, function(f){
-		f.file(function(file){
-			var reader = new FileReader();
-			reader.onloadend = function(e) {
-				console.log(e.target.result);
+		fileEntry.getFile('400.jpg', {}, function(f){
+			f.file(function(file){
+				var reader = new FileReader();
+				reader.onloadend = function(e) {
+					console.log(e.target.result);
 
-				
-				var img = document.createElement('img');
-				img.src = e.target.result;
-				$preview.html($(img));
-			};
-			reader.readAsDataURL(file);
+					
+					var img = document.createElement('img');
+					img.src = e.target.result;
+					$preview.html($(img));
+				};
+				reader.readAsDataURL(file);
+			});
 		});
-	});
 
-	fileEntry.getFile('dupadupa.txt', {create: true}, function(f){
-		f.createWriter(function(fileWriter) {
+		fileEntry.getFile('dupadupa.txt', {create: true}, function(f){
+			f.createWriter(function(fileWriter) {
 
-			fileWriter.onwriteend = function(e) {
-        console.log('Write completed.');
-      };
+				fileWriter.onwriteend = function(e) {
+			console.log('Write completed.');
+		};
 
-      fileWriter.onerror = function(e) {
-        console.log('Write failed: ' + e.toString());
-      };
+		fileWriter.onerror = function(e) {
+			console.log('Write failed: ' + e.toString());
+		};
 
-			var debug = {hello: "world"};
-			var blob = new Blob([JSON.stringify(debug, null, 2)], {type : 'application/json'});
-			fileWriter.write(blob);
+				var debug = {hello: "world"};
+				var blob = new Blob([JSON.stringify(debug, null, 2)], {type : 'application/json'});
+				fileWriter.write(blob);
+			});
 		});
-	});
-  }
+	}
 
-        chrome.fileSystem.chooseEntry( {
+	function adjustPreview(){
+		console.log(previewOriginalWidth);
+		$('#previewPanel > img').css('width', previewOriginalWidth * previewRatio / 100);
+
+	}
+
+    chrome.fileSystem.chooseEntry( {
       type: 'openDirectory',
       
       
       acceptsAllTypes: true
-        }, exportToFileEntry);
+    }, exportToFileEntry);
 	
 	$(window).on('scroll', '#previewPanel > img', function(event){
 		console.log(event);
@@ -88,7 +97,7 @@ $(function(){
 			if(previewRatio > 100) previewRatio = 100;
 			//
 
-			$('#previewPanel > img').css('height', previewRatio+'%');
+			adjustPreview();
 		}
 	});
 
@@ -112,6 +121,8 @@ $(function(){
 					img.class = 'preview';
 					img.src = e.target.result;
 					$preview.html($(img));
+
+					adjustPreview();
 				};
 				reader.readAsDataURL(file);
 			});
